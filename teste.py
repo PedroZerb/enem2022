@@ -2,12 +2,16 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import gzip
 
 # print (plt.__version__)
 # print (pd.__version__)
 
+with gzip.open('arquivo_modificado.csv.gz', 'rt') as enem2022:
+    enem_data = pd.read_csv(enem2022)
+
 # Abrindo o arquivo de dados
-enem_data=pd.read_csv('MICRODADOS_ENEM_2022 - Copia.csv', sep=',', encoding='latin-1')
+#enem_data=pd.read_csv('MICRODADOS_ENEM_2022 - Copia.csv', sep=',', encoding='latin-1')
 
 #---------------------------------------------------TIRANDO OS OUTLIERS DAS NOTAS-------------------------------------------------------------------------------------------------------------------------
 
