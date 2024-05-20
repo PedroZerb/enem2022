@@ -47,7 +47,9 @@ with gzip.open('arquivo_modificado.csv.gz', 'rt') as enem2022:
 
 # enem_data.to_csv('MICRODADOS_ENEM_2022 - Copia.csv', index=False)
 
-st.header('Gráfico de barras')
+st.header('Análises de dados do ENEM de 2022')
+
+st.subheader('Gráfico de barras')
 
 #---------------------------------1--------------------------GERAR O GRÁFICO DE BARRAS------------------------------------------------------------------------------------------------------------  
 
