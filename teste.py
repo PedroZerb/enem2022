@@ -909,8 +909,29 @@ else:
     else:
         st.write("Por favor, selecione pelo menos um estado.")
 #--------------------------------22-------------------------------------------------------------------------------------------------------------------------------------------------------------
-# Subtítulo para o gráfico
-st.subheader('Quantidade de Pessoas por Faixa Etária e Raça/Cor')
+# Dicionário para mapeamento de faixa etária
+faixa_etaria_dict = {
+    1: 'Menor de 17 anos',
+    2: '17 anos',
+    3: '18 anos',
+    4: '19 anos',
+    5: '20 anos',
+    6: '21 anos',
+    7: '22 anos',
+    8: '23 anos',
+    9: '24 anos',
+    10: '25 anos',
+    11: 'Entre 26 e 30 anos',
+    12: 'Entre 31 e 35 anos',
+    13: 'Entre 36 e 40 anos',
+    14: 'Entre 41 e 45 anos',
+    15: 'Entre 46 e 50 anos',
+    16: 'Entre 51 e 55 anos',
+    17: 'Entre 56 e 60 anos',
+    18: 'Entre 61 e 65 anos',
+    19: 'Entre 66 e 70 anos',
+    20: 'Maior de 70 anos'
+}
 
 # Dicionário para mapeamento de raça/cor
 raca_cor_dict = {
@@ -921,6 +942,9 @@ raca_cor_dict = {
     4: 'Amarela',
     5: 'Indígena'
 }
+
+# Subtítulo para o gráfico
+st.subheader('Quantidade de Pessoas por Faixa Etária e Raça/Cor')
 
 # Ordenar as raças/cores em ordem dos valores do dicionário
 racas_unicas = [raca_cor_dict[key] for key in sorted(raca_cor_dict.keys())]
@@ -935,62 +959,63 @@ else:
     if len(racas_selecionadas) > 0:
         # Converter as raças selecionadas para os respectivos valores numéricos
         racas_selecionadas_numericas = [key for key, value in raca_cor_dict.items() if value in racas_selecionadas]
-        
+
         # Filtrar os dados com base nas raças selecionadas
         dados_filtrados = enem_data[enem_data['TP_COR_RACA'].isin(racas_selecionadas_numericas)]
-        
+
         # Substituir os números pelas frases na coluna 'TP_FAIXA_ETARIA'
         dados_filtrados['TP_FAIXA_ETARIA'] = dados_filtrados['TP_FAIXA_ETARIA'].replace(faixa_etaria_dict)
-        
+
         # Substituir os números pelas frases na coluna 'TP_COR_RACA'
         dados_filtrados['TP_COR_RACA'] = dados_filtrados['TP_COR_RACA'].replace(raca_cor_dict)
-        
+
         # Agrupar os dados filtrados por raça/cor e faixa etária e contar a quantidade de pessoas
         grouped_data = dados_filtrados.groupby(['TP_COR_RACA', 'TP_FAIXA_ETARIA']).size().unstack(fill_value=0)
-        
+
         # Reordenar as faixas etárias conforme o dicionário
         categorias_ordenadas = list(faixa_etaria_dict.values())
-        grouped_data = grouped_data.reindex(columns=categorias_ordenadas)
-        
+        grouped_data = grouped_data.reindex(columns=categorias_ordenadas, fill_value=0)
+
         # Criar a figura do gráfico
         fig, ax = plt.subplots(figsize=(12, 8))
-        
+
         # Definir a largura das barras
         n = len(racas_selecionadas)
         bar_width = 0.8 / n  # Afinar as barras conforme o número de raças selecionadas
         x = np.arange(len(categorias_ordenadas))
-        
+
         # Plotar as barras para cada raça/cor
         for i, raca in enumerate(racas_selecionadas):
-            bars = ax.bar(x + i * bar_width, grouped_data.loc[raca], bar_width, label=raca)
-            
-            # Adicionar os valores das colunas acima das barras com rotação de 90 graus
-            for bar in bars:
-                height = bar.get_height()
-                if not np.isnan(height):  # Verificar se o valor não é NaN
-                    ax.annotate(f'{int(height)}',
-                                xy=(bar.get_x() + bar.get_width() / 2, height),
-                                xytext=(0, 1),  # 1 point vertical offset to reduce overlap
-                                textcoords='offset points',
-                                ha='center', va='bottom', rotation=90)
-        
+            if raca in grouped_data.index:
+                bars = ax.bar(x + i * bar_width, grouped_data.loc[raca], bar_width, label=raca)
+
+                # Adicionar os valores das colunas acima das barras com rotação de 90 graus
+                for bar in bars:
+                    height = bar.get_height()
+                    if not np.isnan(height):  # Verificar se o valor não é NaN
+                        ax.annotate(f'{int(height)}',
+                                    xy=(bar.get_x() + bar.get_width() / 2, height),
+                                    xytext=(0, 1),  # 1 point vertical offset to reduce overlap
+                                    textcoords='offset points',
+                                    ha='center', va='bottom', rotation=90)
+
         # Configurar o título do gráfico, rótulos dos eixos e legenda
         ax.set_title('Quantidade de Pessoas por Faixa Etária e Raça/Cor')
         ax.set_xlabel('Faixa Etária')
         ax.set_ylabel('Quantidade de Pessoas')
         ax.set_xticks(x + bar_width * (n - 1) / 2)
         ax.set_xticklabels(categorias_ordenadas, rotation=90)
-        
+
         # Ajustar os limites do eixo y para garantir que os números não saiam pela parte superior
         max_height = grouped_data.max().max()
         ax.set_ylim(0, max_height * 1.1)
-        
+
         # Colocar a legenda fora do gráfico
         ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
-        
+
         # Ajustar o layout para não cortar a legenda
         plt.tight_layout(rect=[0, 0, 0.85, 1])
-        
+
         # Mostrar o gráfico no Streamlit
         st.pyplot(fig)
     else:
