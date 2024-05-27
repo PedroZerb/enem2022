@@ -1006,9 +1006,12 @@ else:
         ax.set_xticks(x + bar_width * (n - 1) / 2)
         ax.set_xticklabels(categorias_ordenadas, rotation=90)
 
-        # Ajustar os limites do eixo y para garantir que os números não saiam pela parte superior
+        # Verificar se max_height é um número válido
         max_height = grouped_data.max().max()
-        ax.set_ylim(0, max_height * 1.1)
+        if not np.isnan(max_height) and not np.isinf(max_height):
+            ax.set_ylim(0, max_height * 1.1)
+        else:
+            st.error("Erro ao calcular a altura máxima do gráfico. Verifique os dados filtrados.")
 
         # Colocar a legenda fora do gráfico
         ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
