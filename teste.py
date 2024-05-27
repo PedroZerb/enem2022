@@ -943,6 +943,12 @@ raca_cor_dict = {
     5: 'Indígena'
 }
 
+# Verificar a estrutura inicial dos dados
+st.write("Dados iniciais:", enem_data.head())
+
+# Verificar as colunas presentes nos dados
+st.write("Colunas dos dados:", enem_data.columns)
+
 # Subtítulo para o gráfico
 st.subheader('Quantidade de Pessoas por Faixa Etária e Raça/Cor')
 
@@ -960,14 +966,23 @@ else:
         # Converter as raças selecionadas para os respectivos valores numéricos
         racas_selecionadas_numericas = [key for key, value in raca_cor_dict.items() if value in racas_selecionadas]
 
+        # Verificar as raças selecionadas e seus valores numéricos correspondentes
+        st.write("Raças selecionadas (numéricas):", racas_selecionadas_numericas)
+
         # Filtrar os dados com base nas raças selecionadas
         dados_filtrados = enem_data[enem_data['TP_COR_RACA'].isin(racas_selecionadas_numericas)]
+
+        # Verificar os dados filtrados
+        st.write("Dados filtrados após selecionar raças:", dados_filtrados.head())
 
         # Substituir os números pelas frases na coluna 'TP_FAIXA_ETARIA'
         dados_filtrados['TP_FAIXA_ETARIA'] = dados_filtrados['TP_FAIXA_ETARIA'].replace(faixa_etaria_dict)
 
         # Substituir os números pelas frases na coluna 'TP_COR_RACA'
         dados_filtrados['TP_COR_RACA'] = dados_filtrados['TP_COR_RACA'].replace(raca_cor_dict)
+
+        # Verificar os dados após substituir as categorias
+        st.write("Dados após substituir categorias:", dados_filtrados.head())
 
         # Verificar se há dados após o filtro
         if dados_filtrados.empty:
@@ -979,6 +994,9 @@ else:
             # Reordenar as faixas etárias conforme o dicionário
             categorias_ordenadas = list(faixa_etaria_dict.values())
             grouped_data = grouped_data.reindex(columns=categorias_ordenadas, fill_value=0)
+
+            # Verificar os dados agrupados
+            st.write("Dados agrupados:", grouped_data)
 
             # Verificar novamente se há dados após o agrupamento
             if grouped_data.empty or grouped_data.sum().sum() == 0:
