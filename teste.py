@@ -11,8 +11,6 @@ import gzip
 with gzip.open('arquivo_modificado.csv.gz', 'rt') as enem2022:
    enem_data = pd.read_csv(enem2022)
 
-#enem_data=pd.read_csv('MICRODADOS_ENEM_2022 - Copia.csv', sep=',', encoding='latin-1')
-
 #---------------------------------------------------TIRANDO OS OUTLIERS DAS NOTAS-------------------------------------------------------------------------------------------------------------------------
 
 # nlinhas = len(enem_data)
@@ -29,8 +27,6 @@ with gzip.open('arquivo_modificado.csv.gz', 'rt') as enem2022:
 
 # print(f"O arquivo tem {nlinhas} linhas.")
 
-# enem_data.to_csv('MICRODADOS_ENEM_2022 - Copia.csv', index=False)
-
 #----------------------------------------------------CRIANDO UMA COLUNA COM NOTA TOTAL-----------------------------------------------------------------------------------------------------------------
 
 # Calcule a média das colunas restantes e crie a nova coluna
@@ -44,8 +40,6 @@ with gzip.open('arquivo_modificado.csv.gz', 'rt') as enem2022:
 
 # # Visualize o resultado
 # print(enem_data.head())
-
-# enem_data.to_csv('MICRODADOS_ENEM_2022 - Copia.csv', index=False)
 
 st.header('Gráfico de barras')
 
@@ -765,15 +759,6 @@ else:
     st.write("Por favor, selecione pelo menos um tipo de escola.")
 
 #---------------------------------20------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-import streamlit as st
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-
-# Abrindo o arquivo de dados
-enem_data = pd.read_csv('MICRODADOS_ENEM_2022 - Copia.csv', sep=',', encoding='latin-1')
-
 # Subtítulo para o gráfico
 st.subheader('Média de Notas por Tipo de Escola e Sexo')
 
@@ -1242,14 +1227,6 @@ else:
         st.pyplot(fig)
 #--------------------------------26-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-
-# Abrindo o arquivo de dados
-enem_data = pd.read_csv('MICRODADOS_ENEM_2022 - Copia.csv', sep=',', encoding='latin-1')
-
 # Subtítulo para o gráfico
 st.subheader('Quantidade de Pessoas por Estado e Raça/Cor')
 
@@ -1591,14 +1568,6 @@ ax.set_title(f'Dispersão {selecao_var_x} x {selecao_var_y} para as Cor/Raça se
 st.pyplot(fig)
 
 #--------------------------------31-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-
-# Abrindo o arquivo de dados
-enem_data = pd.read_csv('MICRODADOS_ENEM_2022 - Copia.csv', sep=',', encoding='latin-1')
-
 # Dicionário de tipos de escola
 tipo_escola_dict = {
     1: 'Não Respondeu',
