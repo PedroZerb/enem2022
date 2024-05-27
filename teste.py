@@ -969,58 +969,66 @@ else:
         # Substituir os números pelas frases na coluna 'TP_COR_RACA'
         dados_filtrados['TP_COR_RACA'] = dados_filtrados['TP_COR_RACA'].replace(raca_cor_dict)
 
-        # Agrupar os dados filtrados por raça/cor e faixa etária e contar a quantidade de pessoas
-        grouped_data = dados_filtrados.groupby(['TP_COR_RACA', 'TP_FAIXA_ETARIA']).size().unstack(fill_value=0)
-
-        # Reordenar as faixas etárias conforme o dicionário
-        categorias_ordenadas = list(faixa_etaria_dict.values())
-        grouped_data = grouped_data.reindex(columns=categorias_ordenadas, fill_value=0)
-
-        # Criar a figura do gráfico
-        fig, ax = plt.subplots(figsize=(12, 8))
-
-        # Definir a largura das barras
-        n = len(racas_selecionadas)
-        bar_width = 0.8 / n  # Afinar as barras conforme o número de raças selecionadas
-        x = np.arange(len(categorias_ordenadas))
-
-        # Plotar as barras para cada raça/cor
-        for i, raca in enumerate(racas_selecionadas):
-            if raca in grouped_data.index:
-                bars = ax.bar(x + i * bar_width, grouped_data.loc[raca], bar_width, label=raca)
-
-                # Adicionar os valores das colunas acima das barras com rotação de 90 graus
-                for bar in bars:
-                    height = bar.get_height()
-                    if not np.isnan(height):  # Verificar se o valor não é NaN
-                        ax.annotate(f'{int(height)}',
-                                    xy=(bar.get_x() + bar.get_width() / 2, height),
-                                    xytext=(0, 1),  # 1 point vertical offset to reduce overlap
-                                    textcoords='offset points',
-                                    ha='center', va='bottom', rotation=90)
-
-        # Configurar o título do gráfico, rótulos dos eixos e legenda
-        ax.set_title('Quantidade de Pessoas por Faixa Etária e Raça/Cor')
-        ax.set_xlabel('Faixa Etária')
-        ax.set_ylabel('Quantidade de Pessoas')
-        ax.set_xticks(x + bar_width * (n - 1) / 2)
-        ax.set_xticklabels(categorias_ordenadas, rotation=90)
-
-        # Verificar se max_height é um número válido
-        max_height = grouped_data.max().max()
-        if not np.isnan(max_height) and not np.isinf(max_height):
-            ax.set_ylim(0, max_height * 1.1)
+        # Verificar se há dados após o filtro
+        if dados_filtrados.empty:
+            st.error("Nenhum dado disponível para as raças/cores selecionadas.")
         else:
-            st.error("Erro ao calcular a altura máxima do gráfico. Verifique os dados filtrados.")
+            # Agrupar os dados filtrados por raça/cor e faixa etária e contar a quantidade de pessoas
+            grouped_data = dados_filtrados.groupby(['TP_COR_RACA', 'TP_FAIXA_ETARIA']).size().unstack(fill_value=0)
 
-        # Colocar a legenda fora do gráfico
-        ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
+            # Reordenar as faixas etárias conforme o dicionário
+            categorias_ordenadas = list(faixa_etaria_dict.values())
+            grouped_data = grouped_data.reindex(columns=categorias_ordenadas, fill_value=0)
 
-        # Ajustar o layout para não cortar a legenda
-        plt.tight_layout(rect=[0, 0, 0.85, 1])
+            # Verificar novamente se há dados após o agrupamento
+            if grouped_data.empty or grouped_data.sum().sum() == 0:
+                st.error("Nenhum dado disponível para as faixas etárias selecionadas.")
+            else:
+                # Criar a figura do gráfico
+                fig, ax = plt.subplots(figsize=(12, 8))
 
-        # Mostrar o gráfico no Streamlit
-        st.pyplot(fig)
+                # Definir a largura das barras
+                n = len(racas_selecionadas)
+                bar_width = 0.8 / n  # Afinar as barras conforme o número de raças selecionadas
+                x = np.arange(len(categorias_ordenadas))
+
+                # Plotar as barras para cada raça/cor
+                for i, raca in enumerate(racas_selecionadas):
+                    if raca in grouped_data.index:
+                        bars = ax.bar(x + i * bar_width, grouped_data.loc[raca], bar_width, label=raca)
+
+                        # Adicionar os valores das colunas acima das barras com rotação de 90 graus
+                        for bar in bars:
+                            height = bar.get_height()
+                            if not np.isnan(height):  # Verificar se o valor não é NaN
+                                ax.annotate(f'{int(height)}',
+                                            xy=(bar.get_x() + bar.get_width() / 2, height),
+                                            xytext=(0, 1),  # 1 point vertical offset to reduce overlap
+                                            textcoords='offset points',
+                                            ha='center', va='bottom', rotation=90)
+
+                # Configurar o título do gráfico, rótulos dos eixos e legenda
+                ax.set_title('Quantidade de Pessoas por Faixa Etária e Raça/Cor')
+                ax.set_xlabel('Faixa Etária')
+                ax.set_ylabel('Quantidade de Pessoas')
+                ax.set_xticks(x + bar_width * (n - 1) / 2)
+                ax.set_xticklabels(categorias_ordenadas, rotation=90)
+
+                # Verificar se max_height é um número válido
+                max_height = grouped_data.max().max()
+                if not np.isnan(max_height) and not np.isinf(max_height):
+                    ax.set_ylim(0, max_height * 1.1)
+                else:
+                    st.error("Erro ao calcular a altura máxima do gráfico. Verifique os dados filtrados.")
+
+                # Colocar a legenda fora do gráfico
+                ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
+
+                # Ajustar o layout para não cortar a legenda
+                plt.tight_layout(rect=[0, 0, 0.85, 1])
+
+                # Mostrar o gráfico no Streamlit
+                st.pyplot(fig)
     else:
         st.write("Por favor, selecione pelo menos uma raça/cor.")
 #--------------------------------23-------------------------------------------------------------------------------------------------------------------------------------------------------------
